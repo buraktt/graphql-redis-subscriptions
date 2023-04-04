@@ -124,8 +124,10 @@ export class RedisPubSub implements PubSubEngine {
   public unsubscribe(subId: number): void {
     const [triggerName = null] = this.subscriptionMap[subId] || [];
     const refs = this.subsRefsMap.get(triggerName);
-
-    if (!refs) throw new Error(`There is no subscription of id "${subId}"`);
+    // throwing error causes a crash
+    // there is a PR here but it's not fixing the error:
+    // https://github.com/davidyaha/graphql-redis-subscriptions/pull/599
+    if (!refs) return console.error(`There is no subscription of id "${subId}"`);
 
     if (refs.size === 1) {
       // unsubscribe from specific channel and pattern match
